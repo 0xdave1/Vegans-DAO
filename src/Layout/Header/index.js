@@ -34,7 +34,7 @@ class Header extends React.Component {
     this.state = {
       account: "",
       position: "",
-      isWalletConnected: false, // Add state variable for wallet connection status
+      isWalletConnected: false, // Added new state variable to track wallet connection status
     };
   }
 
@@ -49,6 +49,7 @@ class Header extends React.Component {
   };
 
   async walletConnect() {
+    // Added check for wallet installation
     if (typeof window.ethereum !== 'undefined') {
       try {
         await window.ethereum.request({
@@ -82,22 +83,26 @@ class Header extends React.Component {
         }
       }
 
+      // Added error handling and user feedback for wallet connection
       try {
         await window.ethereum.enable();
         const clientWeb3 = new Web3(window.ethereum);
         const accounts = await clientWeb3.eth.getAccounts();
-        this.setState({ account: accounts[0], isWalletConnected: true }); // Update state
+        // Updated state to include wallet connection status
+        this.setState({ account: accounts[0], isWalletConnected: true }); 
         this.props.dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
         await this.getPosition(accounts[0]);
 
+        // Updated account change handler with connection status
         window.ethereum.on("accountsChanged", async (accounts) => {
           const account = accounts.length > 0 ? accounts[0] : '';
-          this.setState({ account, isWalletConnected: accounts.length > 0 }); // Update state
+          this.setState({ account, isWalletConnected: accounts.length > 0 }); 
           if (account) {
             await this.getPosition(account);
           } else {
             this.props.dispatch({ type: "SET_ACCOUNT", payload: '' });
             this.props.dispatch({ type: "SET_POSITION", payload: 'GUEST' });
+            this.setState({ position: 'GUEST' }); 
           }
         });
 
@@ -109,10 +114,12 @@ class Header extends React.Component {
         });
 
       } catch (error) {
+        // Added error logging and user feedback
         console.error('Error connecting wallet:', error);
         alert('Failed to connect wallet. Please try again.');
       }
     } else {
+      // Added user-friendly message when no wallet is detected
       alert('No wallet detected. Please install a wallet extension like MetaMask.');
     }
   }

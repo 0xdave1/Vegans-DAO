@@ -171,7 +171,6 @@ class Vote extends React.Component {
                         <TableCell align="left">{key + 1}</TableCell>
                         <TableCell align="center">
                           <Stack
-                            // flexDirection="row"
                             alignItems="center"
                             justifyContent="center"
                             sx={{
@@ -183,8 +182,8 @@ class Vote extends React.Component {
                           >
                             <Box
                               src={
-                                element.source
-                                  ? element.source
+                                element.imageUrl
+                                  ? element.imageUrl
                                   : "/images/election.png"
                               }
                               component="img"
