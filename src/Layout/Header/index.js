@@ -34,6 +34,7 @@ class Header extends React.Component {
     this.state = {
       account: "",
       position: "",
+      isWalletConnected: false, // Add state variable for wallet connection status
     };
   }
 
@@ -85,20 +86,18 @@ class Header extends React.Component {
         await window.ethereum.enable();
         const clientWeb3 = new Web3(window.ethereum);
         const accounts = await clientWeb3.eth.getAccounts();
-        this.setState({ account: accounts[0] });
+        this.setState({ account: accounts[0], isWalletConnected: true }); // Update state
         this.props.dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
         await this.getPosition(accounts[0]);
 
         window.ethereum.on("accountsChanged", async (accounts) => {
           const account = accounts.length > 0 ? accounts[0] : '';
-          this.setState({ account });
+          this.setState({ account, isWalletConnected: accounts.length > 0 }); // Update state
           if (account) {
             await this.getPosition(account);
-            document.getElementById('daoInfo').style.display = 'block';
           } else {
             this.props.dispatch({ type: "SET_ACCOUNT", payload: '' });
             this.props.dispatch({ type: "SET_POSITION", payload: 'GUEST' });
-            document.getElementById('daoInfo').style.display = 'none';
           }
         });
 
